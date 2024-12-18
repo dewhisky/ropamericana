@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-$-ilegdf!po(*0w$q6s3z=@ghy
 DEBUG = False  # Cambiar a False para producción
 
 # ALLOWED HOSTS
-ALLOWED_HOSTS = ['54.207.73.152', 'ec2-54-207-73-152.sa-east-1.compute.amazonaws.com']  # IP pública de tu servidor y DNS público
+ALLOWED_HOSTS = ['52.67.166.57', 'ec2-52.67.166.57.sa-east-1.compute.amazonaws.com']  # IP pública de tu servidor y DNS público
 
 # LOGIN SETTINGS
 LOGIN_URL = '/'  
