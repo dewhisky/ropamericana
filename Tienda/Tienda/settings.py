@@ -1,5 +1,9 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
 
 # BASE_DIR
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -8,16 +12,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-$-ilegdf!po(*0w$q6s3z=@ghyb4rx#v3a$+b$q+n#ol+htyc_')
 
 # DEBUG MODE
-DEBUG = False  # Cambiar a False para producción
+DEBUG = os.getenv('DEBUG') == 'True'  # Controlado desde el archivo .env
 
 # ALLOWED HOSTS
-ALLOWED_HOSTS = ['52.67.166.57', 'ec2-52.67.166.57.sa-east-1.compute.amazonaws.com']  # IP pública de tu servidor y DNS público
+ALLOWED_HOSTS = [
+    '15.228.244.212',  # Nueva IP pública de AWS EC2
+    'ec2-15-228-244-212.sa-east-1.compute.amazonaws.com',  # DNS público de AWS EC2
+]
 
 # LOGIN SETTINGS
 LOGIN_URL = '/'  
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/login/'
 
+# CUSTOM USER MODEL
 AUTH_USER_MODEL = 'EcoVestidoor.CustomUser'
 
 # INSTALLED APPS
@@ -49,7 +57,7 @@ ROOT_URLCONF = 'Tienda.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],  # Asegúrate de usar una carpeta 'templates'
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,11 +77,11 @@ WSGI_APPLICATION = 'Tienda.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ecovestidoor_db',        
-        'USER': 'django_user',            
-        'PASSWORD': 'EcoVestidoor2024!', 
-        'HOST': 'localhost',            
-        'PORT': '3306',                   
+        'NAME': os.getenv('DB_NAME', 'ecovestidoor_db'),
+        'USER': os.getenv('DB_USER', 'django_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'EcoVestidoor2024!'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
 
@@ -93,7 +101,7 @@ USE_TZ = True
 
 # STATIC FILES CONFIGURATION
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Carpeta donde se recopilan los archivos estáticos
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # MEDIA CONFIGURATION
 MEDIA_URL = '/media/'
