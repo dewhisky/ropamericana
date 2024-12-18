@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block header %}Bienvenido a Mi Tienda de Ropa{% endblock %}
+
+{% block content %}
+    <p>Esta es la página principal de tu tienda de ropa.</p>
+    <a href="{% url 'listar_productos' %}" class="btn btn-primary">Ver Productos</a>
+{% endblock %}

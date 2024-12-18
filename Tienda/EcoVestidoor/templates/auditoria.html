@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Auditoría de Usuarios{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Auditoría de Usuarios</h2>
+    <table class="table table-hover table-bordered text-align">
+        <thead class="table-dark">
+            <tr>
+                <th><i class="bi bi-person"></i> Usuario</th>
+                <th><i class="bi bi-activity"></i> Acción</th>
+                <th><i class="bi bi-clock"></i> Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+                <tr>
+                    <td>{{ log.usuario.username }}</td>
+                    <td>{{ log.accion }}</td>
+                    <td>{{ log.fecha|date:"d/m/Y H:i" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+{% endblock %}

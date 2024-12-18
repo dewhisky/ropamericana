@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Usuario{% endblock %}
+
+{% block header %}Editar Usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-white">
+            <h2 class="h4 mb-0">Formulario para Editar Usuario</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+
+                <!-- Nombre de Usuario -->
+                <div class="col-md-6">
+                    <label for="username" class="form-label">Nombre de Usuario:</label>
+                    <input type="text" id="username" name="username" class="form-control" value="{{ usuario.username }}" placeholder="Ingrese el nombre de usuario" required>
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" id="email" name="email" class="form-control" value="{{ usuario.email }}" placeholder="Ingrese el correo electrónico" required>
+                </div>
+
+                <!-- Nombre -->
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Nombre:</label>
+                    <input type="text" id="name" name="name" class="form-control" value="{{ usuario.name }}" placeholder="Ingrese el nombre completo" required>
+                </div>
+
+                <!-- Contraseña -->
+                <div class="col-md-6">
+                    <label for="password" class="form-label">Nueva Contraseña (Opcional):</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Ingrese la nueva contraseña (dejar en blanco para no cambiar)">
+                </div>
+
+                <!-- Rol -->
+                <div class="col-md-6">
+                    <label for="role" class="form-label">Rol:</label>
+                    <select id="role" name="role" class="form-control" required>
+                        <option value="admin" {% if usuario.role == "admin" %}selected{% endif %}>Administrador</option>
+                        <option value="vendor" {% if usuario.role == "vendor" %}selected{% endif %}>Vendedor</option>
+                    </select>
+                </div>
+
+                <!-- Botón Guardar -->
+                <div class="col-md-12 text-center mt-4">
+                    <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                    <a href="{% url 'listar_usuarios' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h1>Detalle de la Venta</h1>
+    <p><strong>ID de Venta:</strong> {{ venta.id }}</p>
+    <p><strong>Usuario:</strong> {{ usuario }}</p>
+    <p><strong>Fecha:</strong> {{ venta.fecha }}</p>
+    <p><strong>Total:</strong> ${{ venta.total }}</p>
+    <p><strong>Método de Pago:</strong> {{ venta.metodo_pago }}</p>
+
+    {% if venta.boleta_pdf %}
+        <p><strong>Boleta:</strong> <a href="{{ venta.boleta_pdf.url }}" target="_blank">Descargar Boleta</a></p>
+    {% else %}
+        <p><strong>Boleta:</strong> No disponible</p>
+    {% endif %}
+
+    <h3>Productos Vendidos</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td>{{ producto.producto.nombre }}</td>
+                <td>{{ producto.cantidad }}</td>
+                <td>${{ producto.producto.precio }}</td>
+                <td>${{ producto.subtotal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

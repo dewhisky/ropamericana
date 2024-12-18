@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Mover Producto a Tienda{% endblock %}
+
+{% block header %}Mover Producto a Tienda{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Mover Producto a Tienda</h2>
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Nombre del Producto</label>
+                <input type="text" class="form-control" value="{{ producto.nombre }}" disabled>
+            </div>
+            <div class="form-group">
+                <label>Stock Disponible en Bodega</label>
+                <input type="text" class="form-control" value="{{ producto.stock }}" disabled>
+            </div>
+            <div class="form-group">
+                <label>Cantidad a Mover</label>
+                {{ form.cantidad }}
+            </div>
+            <button type="submit" class="btn btn-primary">Mover a Tienda</button>
+        </form>
+    </div>
+{% endblock %}

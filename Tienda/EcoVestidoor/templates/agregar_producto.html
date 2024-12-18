@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Agregar Producto a la Bodega{% endblock %}
+{% block header %}Agregar Producto a la Bodega{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Agregar Producto</h2>
+    <form method="post" action="{% url 'agregar_producto_bodega' %}" id="form-agregar-producto" class="row g-3">
+        {% csrf_token %}
+        
+        <div class="col-md-6">
+            <label for="nombre" class="form-label fw-bold">Nombre:</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ejemplo: Camisa">
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <label for="codigo_barras" class="form-label fw-bold">Código de Barras:</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                <input type="text" class="form-control" id="codigo_barras" name="codigo_barras" placeholder="Ingrese o escanee el código de barras">
+                <button type="button" class="btn btn-outline-primary" id="activar-escaneo">
+                    <i class="bi bi-camera"></i> Escanear
+                </button>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <label for="precio" class="form-label fw-bold">Precio:</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                <input type="number" class="form-control" id="precio" name="precio" step="0.01" placeholder="Ejemplo: 1200">
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <label for="stock" class="form-label fw-bold">Stock:</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-boxes"></i></span>
+                <input type="number" class="form-control" id="stock" name="stock" placeholder="Ejemplo: 50">
+            </div>
+        </div>
+        
+        <div class="col-md-12 text-end">
+            <button type="submit" class="btn btn-success me-2">
+                <i class="bi bi-save"></i> Guardar
+            </button>
+            <a href="{% url 'listar_productos' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a la lista
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    let scanBuffer = '';
+    let escaneoActivo = false;
+
+    document.getElementById('activar-escaneo').addEventListener('click', function() {
+        escaneoActivo = true;
+        document.getElementById('codigo_barras').focus();
+    });
+
+    // Listener para el escáner de códigos de barras
+    document.addEventListener('keydown', function(event) {
+        if (!escaneoActivo) return;
+
+        if (event.key === 'Enter') {
+            const codigoBarrasInput = document.getElementById('codigo_barras');
+            codigoBarrasInput.value = scanBuffer;
+            scanBuffer = '';  // Limpia el buffer de escaneo pero no el campo de entrada
+            escaneoActivo = false;
+            event.preventDefault(); // Prevenir comportamiento por defecto del Enter
+        } else {
+            scanBuffer += event.key;
+        }
+    });
+</script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+{% endblock %}
