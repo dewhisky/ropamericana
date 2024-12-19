@@ -19,7 +19,11 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.dispatch import receiver
 from django.contrib.sessions.models import Session
 from django.utils.timezone import now
-
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.platypus import Table, TableStyle
+from reportlab.lib import colors
+from django.http import FileResponse
 
 
 def banner_view(request):
@@ -450,50 +454,59 @@ def eliminar_producto_carrito(request, indice):
 
 @login_required
 def imprimir_boleta(request, venta_id):
-    # Detectar carpeta Descargas del usuario en Windows
-    downloads_folder = str(Path.home() / "Downloads")
-
     # Obtener la venta y los productos relacionados
     venta = get_object_or_404(Venta, id=venta_id)
     productos = VentaProducto.objects.filter(venta=venta)
 
     # Crear un buffer en memoria para el PDF
     buffer = BytesIO()
-    pdf = canvas.Canvas(buffer)
+    pdf = canvas.Canvas(buffer, pagesize=letter)
 
-    # Generar contenido del PDF
-    pdf.drawString(100, 800, f"Boleta de Venta #{venta.id}")
-    pdf.drawString(100, 780, f"Fecha: {venta.fecha}")
-    pdf.drawString(100, 760, f"Usuario: {venta.usuario.name if venta.usuario else 'Sin Usuario'}")
+    # Títulos principales
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawCentredString(300, 750, f"R.U.T.: 76.192.083-9")
+    pdf.drawCentredString(300, 735, "BOLETA ELECTRÓNICA")
+    pdf.drawCentredString(300, 720, f"N° {venta.id}")
 
-    y = 720
-    pdf.drawString(100, y, "Productos:")
+    # Fecha de emisión
+    pdf.drawString(50, 630, f"Emisión: {venta.fecha.strftime('%d de %B del %Y')}")
+
+    # Tabla de productos
+    table_data = [["Item", "P. Unitario", "Cant.", "Total Item"]]
+
     for producto in productos:
-        y -= 20
-        pdf.drawString(
-            100, y, f"- {producto.producto.nombre}: {producto.cantidad} x ${producto.producto.precio} = ${producto.subtotal}"
-        )
+        table_data.append([
+            producto.producto.nombre,
+            f"{producto.producto.precio:.2f}",
+            str(producto.cantidad),
+            f"{producto.subtotal:.2f}"
+        ])
 
-    y -= 40
-    pdf.drawString(100, y, f"Total: ${venta.total}")
+    # Posicionar la tabla
+    table = Table(table_data, colWidths=[200, 100, 50, 100])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('ALIGN', (1, 1), (-1, -1), 'CENTER'),
+    ]))
+    table.wrapOn(pdf, 50, 500)
+    table.drawOn(pdf, 50, 500)
 
+    # Total de la venta
+    pdf.setFont("Helvetica-Bold", 10)
+    pdf.drawString(400, 480, "Total $:")
+    pdf.drawString(450, 480, f"{venta.total:.2f}")
+
+    # Código de barras y notas finales
+    pdf.setFont("Helvetica", 8)
+
+    # Guardar el PDF en el buffer
     pdf.save()
+    buffer.seek(0)
 
-    # Guardar el archivo PDF en la carpeta Descargas
-    file_name = f"boleta_{venta.id}.pdf"
-    file_path = os.path.join(downloads_folder, file_name)
+    # Retornar el PDF como respuesta
+    return FileResponse(buffer, as_attachment=True, filename=f"boleta_{venta.id}.pdf")
 
-    try:
-        with open(file_path, "wb") as f:
-            f.write(buffer.getvalue())
-
-        # Mensaje de éxito
-        messages.success(request, f"La boleta se guardó en Descargas como {file_name}.")
-    except Exception as e:
-        # Manejo de errores al guardar el archivo
-        messages.error(request, f"Error al guardar la boleta: {e}")
-
-    return redirect('historial_ventas')
 
 @user_passes_test(lambda u: u.role == 'admin')
 def agregar_usuario(request):
@@ -558,7 +571,7 @@ def editar_usuario(request, pk):
 
             # Si el usuario editado es el mismo que está autenticado
             if usuario == request.user:
-                messages.success(request, "Has editado tu propio usuario. La sesión se cerrará por seguridad.")
+                messages.success(request, "Has editado tu propio usuario. La sesión se cerró por seguridad.")
                 logout(request)
                 return redirect('login')
             else:
@@ -570,5 +583,8 @@ def editar_usuario(request, pk):
         form = CustomUserForm(instance=usuario)
 
     return render(request, 'editar_usuario.html', {'form': form, 'usuario': usuario})
+
+
+
 
 
